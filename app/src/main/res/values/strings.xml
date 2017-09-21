@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Play Billing Library Sample for Kotlin</string>
+    <string name="action_settings">Settings</string>
+</resources>
