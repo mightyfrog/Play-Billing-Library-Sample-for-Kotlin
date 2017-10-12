@@ -66,20 +66,20 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
     }
 
     private fun queryPurchases() {
-        billingClient?.apply {
+        billingClient?.let {
             val params = SkuDetailsParams.newBuilder()
                     .setSkusList(arrayListOf("premium", "gas", "dummy"))
                     .setType(BillingClient.SkuType.INAPP)
                     .build()
-            querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
+            it.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
                 when (responseCode) {
                     BillingClient.BillingResponse.OK -> {
-                        if (skuDetailsList.size != 0) {
+                        if (skuDetailsList.isNotEmpty()) {
                             for (sd in skuDetailsList) {
                                 textView?.append(sd.toString() + "\n\n")
                             }
                         } else {
-                            Toast.makeText(this@MainActivity, "No purchases yet", Toast.LENGTH_LONG).show()
+                            Toast.makeText(this, "No purchases yet", Toast.LENGTH_LONG).show()
                         }
                     }
                     else -> {
@@ -91,12 +91,12 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
     }
 
     private fun launchPurchase() {
-        billingClient?.apply {
+        billingClient?.let {
             val params = BillingFlowParams.newBuilder()
                     .setSku("gas")
                     .setType(BillingClient.SkuType.INAPP)
                     .build()
-            launchBillingFlow(this@MainActivity, params)
+            it.launchBillingFlow(this, params)
         }
     }
 }
