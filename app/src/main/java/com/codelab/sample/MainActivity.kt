@@ -17,9 +17,9 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
         private val TAG = "PBL Sample"
     }
 
-    private var billingClient: BillingClient? = null
+    private lateinit var billingClient: BillingClient
 
-    private var textView: TextView? = null
+    private lateinit var textView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +32,7 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
         textView = findViewById(R.id.textView)
 
         billingClient = BillingClient.newBuilder(this).setListener(this).build()
-        billingClient?.startConnection(this)
+        billingClient.startConnection(this)
     }
 
     override fun onBillingSetupFinished(resultCode: Int) {
@@ -66,37 +66,33 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
     }
 
     private fun queryPurchases() {
-        billingClient?.let {
-            val params = SkuDetailsParams.newBuilder()
-                    .setSkusList(arrayListOf("premium", "gas", "dummy"))
-                    .setType(BillingClient.SkuType.INAPP)
-                    .build()
-            it.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
-                when (responseCode) {
-                    BillingClient.BillingResponse.OK -> {
-                        if (skuDetailsList.isNotEmpty()) {
-                            for (sd in skuDetailsList) {
-                                textView?.append(sd.toString() + "\n\n")
-                            }
-                        } else {
-                            Toast.makeText(this, "No purchases yet", Toast.LENGTH_LONG).show()
+        val params = SkuDetailsParams.newBuilder()
+                .setSkusList(arrayListOf("premium", "gas", "dummy"))
+                .setType(BillingClient.SkuType.INAPP)
+                .build()
+        billingClient.querySkuDetailsAsync(params) { responseCode, skuDetailsList ->
+            when (responseCode) {
+                BillingClient.BillingResponse.OK -> {
+                    if (skuDetailsList.isNotEmpty()) {
+                        skuDetailsList.forEach {
+                            textView.append(it.toString() + "\n\n")
                         }
+                    } else {
+                        Toast.makeText(this, "No purchases yet", Toast.LENGTH_LONG).show()
                     }
-                    else -> {
-                        Log.d(TAG, "Query failed: (response code=$responseCode)")
-                    }
+                }
+                else -> {
+                    Log.d(TAG, "Query failed: (response code=$responseCode)")
                 }
             }
         }
     }
 
     private fun launchPurchase() {
-        billingClient?.let {
-            val params = BillingFlowParams.newBuilder()
-                    .setSku("gas")
-                    .setType(BillingClient.SkuType.INAPP)
-                    .build()
-            it.launchBillingFlow(this, params)
-        }
+        val params = BillingFlowParams.newBuilder()
+                .setSku("gas")
+                .setType(BillingClient.SkuType.INAPP)
+                .build()
+        billingClient.launchBillingFlow(this, params)
     }
 }
