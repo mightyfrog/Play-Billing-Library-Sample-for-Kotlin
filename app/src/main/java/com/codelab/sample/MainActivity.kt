@@ -1,12 +1,12 @@
 package com.codelab.sample
 
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.widget.TextView
 import android.widget.Toast
 import com.android.billingclient.api.*
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * @author Shigehiro Soejima
@@ -25,9 +25,9 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setSupportActionBar(toolbar)
 
-        findViewById<FloatingActionButton>(R.id.fab).setOnClickListener { launchPurchase() }
+        fab.setOnClickListener { launchPurchase() }
 
         textView = findViewById(R.id.textView)
 
