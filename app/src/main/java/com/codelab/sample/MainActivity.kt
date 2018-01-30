@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesUpdatedListener {
 
     companion object {
-        private val TAG = "PBL Sample"
+        private const val TAG = "PBL Sample"
     }
 
     private lateinit var billingClient: BillingClient
