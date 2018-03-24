@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
                 Log.d(TAG, "onPurchasesUpdated: User canceled")
             }
             else -> {
-                Log.d(TAG, "onPurchasesUpdated: responseCode=" + responseCode)
+                Log.d(TAG, "onPurchasesUpdated: responseCode=$responseCode")
             }
         }
     }
