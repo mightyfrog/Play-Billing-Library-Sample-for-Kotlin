@@ -3,7 +3,6 @@ package com.codelab.sample
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.widget.TextView
 import android.widget.Toast
 import com.android.billingclient.api.*
 import kotlinx.android.synthetic.main.activity_main.*
@@ -19,8 +18,6 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
 
     private lateinit var billingClient: BillingClient
 
-    private lateinit var textView: TextView
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -28,8 +25,6 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
         setSupportActionBar(toolbar)
 
         fab.setOnClickListener { launchPurchase() }
-
-        textView = findViewById(R.id.textView)
 
         billingClient = BillingClient.newBuilder(this).setListener(this).build()
         billingClient.startConnection(this)
