@@ -6,7 +6,7 @@ Play Billing Library 3.0 sample
 
 "billing_codelab_signature.jks" is from Google Devloper Codelabs and exposed for testing purpose only.
 
-<table bordercolor="#ffffff">
+<table>
 <tr>
 <td><img src="screenshot1.png" alt="demo1" align="right" width="200px" /></td>
 <td><img src="screenshot2.png" alt="demo2" align="right" width="200px" /></td>
