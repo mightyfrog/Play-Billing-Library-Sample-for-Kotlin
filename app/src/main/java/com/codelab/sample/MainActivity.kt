@@ -1,6 +1,10 @@
 package com.codelab.sample
 
+import android.graphics.Color
 import android.os.Bundle
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -39,7 +43,7 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
         fab.setOnClickListener { launchPurchase() }
 
         billingClient =
-            BillingClient.newBuilder(this).enablePendingPurchases().setListener(this).build()
+                BillingClient.newBuilder(this).enablePendingPurchases().setListener(this).build()
         billingClient.startConnection(this)
     }
 
@@ -69,18 +73,26 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
             }
             else -> {
                 Toast.makeText(this, "Error: responseCode=${p0.responseCode}", Toast.LENGTH_LONG)
-                    .show()
+                        .show()
             }
         }
     }
 
     private fun queryPurchases() {
+        // get purchased items
+        val purchased = mutableSetOf<String>()
+        val purchasesResult = billingClient.queryPurchases(BillingClient.SkuType.INAPP)
+        purchasesResult.purchasesList?.forEach { purchase ->
+            purchased.add(purchase.sku)
+        }
+
+        // get available item details by type
         val params = SkuDetailsParams.newBuilder()
-            .setSkusList(
-                arrayListOf("premium", "gas", "dummy") // dummy won't get any result
-            )
-            .setType(BillingClient.SkuType.INAPP)
-            .build()
+                .setSkusList(
+                        arrayListOf("premium", "gas", "dummy") // dummy won't get any result
+                )
+                .setType(BillingClient.SkuType.INAPP)
+                .build()
         billingClient.querySkuDetailsAsync(params) { billingResult, skuDetailsList ->
             this.skuDetailsList = skuDetailsList
 
@@ -88,12 +100,20 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
                 BillingClient.BillingResponseCode.OK -> {
                     skuDetailsList?.apply {
                         if (isNotEmpty()) {
-                            forEach {
-                                textView.append(it.toString() + "\n\n")
+                            forEach { details ->
+                                val text = details.toString()
+                                if (purchased.contains(details.sku)) {
+                                    val spanned = SpannableString(text)
+                                    spanned.setSpan(ForegroundColorSpan(Color.BLUE), 0, text.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                                    textView.append(spanned)
+                                } else {
+                                    textView.append(details.toString())
+                                }
+                                textView.append("\n\n")
                             }
                         } else {
-                            Toast.makeText(this@MainActivity, "No purchases yet", Toast.LENGTH_LONG)
-                                .show()
+                            Toast.makeText(this@MainActivity, "No IAB items found", Toast.LENGTH_LONG)
+                                    .show()
                         }
                     }
                 }
@@ -112,8 +132,8 @@ class MainActivity : AppCompatActivity(), BillingClientStateListener, PurchasesU
                 list[1]
             }
             val params = BillingFlowParams.newBuilder()
-                .setSkuDetails(skuDetail)
-                .build()
+                    .setSkuDetails(skuDetail)
+                    .build()
             billingClient.launchBillingFlow(this, params)
         }
     }
